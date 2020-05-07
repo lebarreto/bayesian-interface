@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiPlay, FiSettings, FiImage, FiArchive } from 'react-icons/fi';
-import { Stage, Layer, Image } from 'react-konva';
+import { Stage, Layer, Image, Circle } from 'react-konva';
 import useImage from 'use-image';
 
 import { Container, HeaderMenu, SideNav } from './styles';
@@ -9,7 +9,14 @@ import circle from '../../assets/circle.png';
 
 const URLImage = ({ image }) => {
   const [img] = useImage(image.src);
-  const [name, setName] = useState('');
+  const [name, setName] = useState('oi');
+  const [id, setId] = useState(0);
+
+  useEffect(() => {
+    setId(image.x);
+  }, [img]);
+
+  console.log(id);
 
   return (
     <Image
@@ -20,7 +27,8 @@ const URLImage = ({ image }) => {
       offsetY={img ? img.height / 2 : 0}
       draggable="true"
       name={name}
-      onClick={console.log(image, 'id')}
+      id={id}
+      key={id}
     />
   );
 };
@@ -29,8 +37,6 @@ function Main() {
   const dragUrl = React.useRef();
   const stageRef = React.useRef();
   const [images, setImages] = useState([]);
-
-  console.log(images.length);
 
   return (
     <Container>
@@ -94,7 +100,7 @@ function Main() {
         >
           <Layer>
             {images.map((image) => {
-              return <URLImage image={image} />;
+              return <URLImage image={image} key={image.x} />;
             })}
           </Layer>
         </Stage>
