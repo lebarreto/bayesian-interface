@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Graph from 'react-graph-vis';
+import { CompactPicker } from 'react-color';
 import {
   FiTrash,
   FiPlay,
@@ -7,33 +7,27 @@ import {
   FiImage,
   FiArchive,
 } from 'react-icons/fi';
+import { Network, Node, Edge } from 'react-vis-network';
 
 import { Container, HeaderMenu, SideNav, Canvas, Line } from './styles';
 import circle from '../../assets/circle.png';
+import seta from '../../assets/seta.png';
 
 export default function Nodes() {
-  var selected = 0;
-
   const [visible, setVisible] = useState(false);
+  const [pickerVisible, setPickerVisible] = useState(false);
+
   const [nodeId, setNodeId] = useState(0);
+  const [selected, setSelected] = useState(0);
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [color, setColor] = useState('#7159c1');
 
-  // var graph = {
-  //   nodes: [
-  //     { id: 1, label: 'Node 1', description: 'Teste', color: '#e04141' },
-  //     { id: 2, label: 'Node 2', description: 'Teste', color: '#e09c41' },
-  //     { id: 3, label: 'Node 3', description: 'Teste', color: '#e0df41' },
-  //     { id: 4, label: 'Node 4', description: 'Teste', color: '#7be041' },
-  //     { id: 5, label: 'Node 5', description: 'Teste', color: '#41e0c9' },
-  //   ],
-  //   edges: [
-  //     { from: 1, to: 2 },
-  //     { from: 1, to: 3 },
-  //     { from: 2, to: 4 },
-  //     { from: 2, to: 5 },
-  //   ],
-  // };
+  var graph = {
+    nodes: [],
+    edges: [],
+  };
 
   const [graphs, setGraphs] = useState({
     options: {
@@ -43,24 +37,26 @@ export default function Nodes() {
       edges: {
         color: '#000000',
       },
+      deleteNode: (nodeData, callback) => {
+        removeNode(nodeData);
+      },
     },
     graph: {
-      nodes: [],
-      edges: [],
+      nodes: graph.nodes,
+      edges: graph.edges,
     },
   });
 
-  function addNode() {
-    // var nodesCopy = graphs.graph.nodes.slice();
+  console.log(graphs.graph.nodes, 'teste');
 
+  function addNode() {
+    console.log(color);
     graphs.graph.nodes.push({
       id: nodeId,
       label: name,
       description: description,
-      color: '#7159c1',
+      color: color,
     });
-
-    console.log(graphs, 'teste');
 
     setVisible(false);
   }
@@ -69,17 +65,21 @@ export default function Nodes() {
     setVisible(true);
   }
 
-  function removeAdd(selected) {
+  function removeNode(selected) {
     const findId = graphs.graph.nodes.findIndex((node) => node.id === selected);
     graphs.graph.nodes.splice(findId, 1);
   }
 
-  const events = {
-    select: function (event) {
-      selected = event.nodes[0];
-      console.log(selected);
-    },
-  };
+  function changeColor() {
+    setPickerVisible(true);
+  }
+
+  function handleColorChange(hex) {
+    setColor(hex.hex);
+    setPickerVisible(false);
+  }
+
+  function addEdges() {}
 
   return (
     <Container>
@@ -111,11 +111,14 @@ export default function Nodes() {
           <button type="button" onClick={openNode}>
             <img src={circle} alt="circle" />
           </button>
+          <button type="button" onClick={addEdges}>
+            <img src={seta} alt="seta" />
+          </button>
         </div>
         <div>
           <button
             type="button"
-            onClick={() => removeAdd(selected)}
+            onClick={() => graphs.options.deleteNode(selected)}
             style={{ background: 'none', border: 'none' }}
           >
             <FiTrash size={40} color="#6202ee" />
@@ -144,24 +147,38 @@ export default function Nodes() {
               name={description}
               onChange={(value) => setDescription(value.target.value)}
             />
-            <button type="button" onClick={addNode}>
+            <label>Color:</label>
+            <button type="button" onClick={changeColor} className="changeColor">
+              Choose color
+            </button>
+            {pickerVisible === true && (
+              <div>
+                <CompactPicker
+                  className="picker"
+                  color={color}
+                  onChangeComplete={handleColorChange}
+                />
+              </div>
+            )}
+            <button type="button" onClick={addNode} className="add">
               Add node
             </button>
           </Canvas>
-          <Line className="line" />
         </>
       ) : null}
 
       <div>
-        <Graph
-          events={events}
-          style={{ height: '640px' }}
-          graph={graphs.graph}
-          options={graphs.options}
-          getNetwork={(network) => {
-            console.log(network.body, 'oq eh isso');
-          }}
-        />
+        <Network
+          style={{ height: '800px', flex: 1 }}
+          onClick={(event) => setSelected(event.nodes[0])}
+        >
+          {graphs.graph.nodes.map((g) => (
+            <Node key={g.id} id={g.id} label={g.label} color={g.color} />
+          ))}
+          {graphs.graph.edges.map((e) => (
+            <Edge key={e.id} id={e.id} from={e.from} to={e.to} />
+          ))}
+        </Network>
       </div>
     </Container>
   );

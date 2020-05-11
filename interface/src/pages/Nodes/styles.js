@@ -93,10 +93,28 @@ export const Canvas = styled.div`
   }
 
   .description {
-    width: 400px;
+    width: 200px;
   }
 
-  button {
+  .changeColor {
+    font-size: 20px;
+    align-items: center;
+    height: 30px;
+    background: #6202ee;
+    color: #fff;
+    border-radius: 5px;
+    border: none;
+    margin-left: 10px;
+    width: 130px;
+  }
+
+  .picker {
+    position: fixed;
+    margin-left: 800px;
+    background: #fff;
+  }
+
+  .add {
     background: #6202ee;
     color: #fff;
     font-size: 20px;
@@ -105,6 +123,7 @@ export const Canvas = styled.div`
     width: 100px;
     border-radius: 5px;
     border: none;
+    margin-left: 80px;
   }
 `;
 
