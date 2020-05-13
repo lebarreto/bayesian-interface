@@ -32,46 +32,42 @@ export default function Nodes() {
   };
 
   const [graphs, setGraphs] = useState({
-    drag: false,
-
     options: {
-      layout: {
-        improvedLayout: true,
-        hierarchical: {
-          enabled: true,
-          sortMethod: 'directed',
-          direction: 'UD',
-          nodeSpacing: 200,
-          levelSeparation: 200,
-        },
-      },
+      layout: {},
       edges: {
         color: '#000000',
         arrows: {
           to: { enabled: true, scaleFactor: 1, type: 'arrow' },
-          smooth: { enabled: true },
         },
       },
       nodes: {
         chosen: true,
+        heightConstraint: true,
+        heightConstraint: {
+          minimum: 30,
+        },
       },
       interaction: {
         tooltipDelay: 150,
         multiselect: true,
         selectable: true,
         selectConnectedEdges: true,
+        dragNodes: true,
       },
-      deleteNode: (nodeData, callback) => {
-        removeNode(nodeData);
-      },
+
       manipulation: {
+        deleteNode: (nodeData, callback) => {
+          removeNode(nodeData);
+        },
         addEdge: function (data1, data2) {
           console.log('add edge', data1, data2);
-          graphs.graph.edges.push({
-            id: uuid(),
-            from: '2',
-            to: '1',
-          });
+          // graphs.graph.edges.push({
+          //   id: uuid(),
+          //   from: data1,
+          //   to: data2,
+          // });
+
+          // console.log(graphs.graph);
         },
       },
     },
@@ -111,10 +107,6 @@ export default function Nodes() {
     setPickerVisible(false);
   }
 
-  async function addEdge(event) {
-    console.log(event, 'oi');
-  }
-
   return (
     <Container>
       <HeaderMenu>
@@ -145,14 +137,19 @@ export default function Nodes() {
           <button type="button" onClick={openNode}>
             <img src={circle} alt="circle" />
           </button>
-          <button type="button" onClick={addEdge}>
+          <button
+            type="button"
+            onClick={() =>
+              graphs.options.manipulation.addEdge(selected, selected2)
+            }
+          >
             <img src={seta} alt="seta" draggable />
           </button>
         </div>
         <div>
           <button
             type="button"
-            onClick={() => graphs.options.deleteNode(selected)}
+            onClick={() => graphs.options.manipulation.deleteNode(selected)}
             style={{ background: 'none', border: 'none' }}
           >
             <FiTrash size={40} color="#6202ee" />
@@ -201,9 +198,13 @@ export default function Nodes() {
         </>
       ) : null}
       <div>
+        {/*  (event) => setSelected2(event.nodes[1]) */}
         <Network
           style={{ height: '800px', flex: 1 }}
-          onClick={(event) => setSelected(event.nodes[0])}
+          onClick={(event) =>
+            setSelected(event.nodes[0]) + setSelected2(event.nodes[1])
+          }
+          options={graphs.options}
         >
           {graphs.graph.nodes.map((g) => (
             <Node key={g.id} id={g.id} label={g.label} color={g.color} />
