@@ -8,6 +8,7 @@ import {
   FiArchive,
 } from 'react-icons/fi';
 import { Network, Node, Edge } from 'react-vis-network';
+import { uuid } from 'uuidv4';
 
 import { Container, HeaderMenu, SideNav, Canvas, Line } from './styles';
 import circle from '../../assets/circle.png';
@@ -19,6 +20,7 @@ export default function Nodes() {
 
   const [nodeId, setNodeId] = useState(0);
   const [selected, setSelected] = useState(0);
+  const [selected2, setSelected2] = useState(0);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -30,15 +32,47 @@ export default function Nodes() {
   };
 
   const [graphs, setGraphs] = useState({
+    drag: false,
+
     options: {
       layout: {
-        hierarchical: false,
+        improvedLayout: true,
+        hierarchical: {
+          enabled: true,
+          sortMethod: 'directed',
+          direction: 'UD',
+          nodeSpacing: 200,
+          levelSeparation: 200,
+        },
       },
       edges: {
         color: '#000000',
+        arrows: {
+          to: { enabled: true, scaleFactor: 1, type: 'arrow' },
+          smooth: { enabled: true },
+        },
+      },
+      nodes: {
+        chosen: true,
+      },
+      interaction: {
+        tooltipDelay: 150,
+        multiselect: true,
+        selectable: true,
+        selectConnectedEdges: true,
       },
       deleteNode: (nodeData, callback) => {
         removeNode(nodeData);
+      },
+      manipulation: {
+        addEdge: function (data1, data2) {
+          console.log('add edge', data1, data2);
+          graphs.graph.edges.push({
+            id: uuid(),
+            from: '2',
+            to: '1',
+          });
+        },
       },
     },
     graph: {
@@ -46,8 +80,6 @@ export default function Nodes() {
       edges: graph.edges,
     },
   });
-
-  console.log(graphs.graph.nodes, 'teste');
 
   function addNode() {
     console.log(color);
@@ -79,7 +111,9 @@ export default function Nodes() {
     setPickerVisible(false);
   }
 
-  function addEdges() {}
+  async function addEdge(event) {
+    console.log(event, 'oi');
+  }
 
   return (
     <Container>
@@ -111,8 +145,8 @@ export default function Nodes() {
           <button type="button" onClick={openNode}>
             <img src={circle} alt="circle" />
           </button>
-          <button type="button" onClick={addEdges}>
-            <img src={seta} alt="seta" />
+          <button type="button" onClick={addEdge}>
+            <img src={seta} alt="seta" draggable />
           </button>
         </div>
         <div>
@@ -166,7 +200,6 @@ export default function Nodes() {
           </Canvas>
         </>
       ) : null}
-
       <div>
         <Network
           style={{ height: '800px', flex: 1 }}
@@ -179,6 +212,15 @@ export default function Nodes() {
             <Edge key={e.id} id={e.id} from={e.from} to={e.to} />
           ))}
         </Network>
+        {/* {graphs.graph.nodes ? (
+          <Graph
+            style={{ height: '800px', flex: 1 }}
+            graph={graphs.graph}
+            options={graphs.options}
+            events={events}
+            getNetwork={(network) => network.renderer.renderingActive === true}
+          />
+        ) : null} */}
       </div>
     </Container>
   );
