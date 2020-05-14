@@ -10,26 +10,37 @@ import {
 import { Network, Node, Edge } from 'react-vis-network';
 import { uuid } from 'uuidv4';
 
-import { Container, HeaderMenu, SideNav, Canvas, Line } from './styles';
+import { Container, HeaderMenu, SideNav, Canvas, Table } from './styles';
 import circle from '../../assets/circle.png';
 import seta from '../../assets/seta.png';
 
 export default function Nodes() {
   const [visible, setVisible] = useState(false);
+  const [tableVisible, setTableVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
 
-  const [nodeId, setNodeId] = useState(0);
-  const [selected, setSelected] = useState(0);
-  const [selected2, setSelected2] = useState(0);
-
+  const [nodeId, setNodeId] = useState('');
+  const [selected, setSelected] = useState('');
+  const [selected2, setSelected2] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+
   const [color, setColor] = useState('#7159c1');
 
   var graph = {
     nodes: [],
     edges: [],
   };
+
+  var table = {
+    states: [],
+  };
+
+  const [tableStates, setTableStates] = useState({
+    tables: {
+      state: table.states,
+    },
+  });
 
   const [graphs, setGraphs] = useState({
     options: {
@@ -61,13 +72,19 @@ export default function Nodes() {
         },
         addEdge: function (data1, data2) {
           console.log('add edge', data1, data2);
-          // graphs.graph.edges.push({
-          //   id: uuid(),
-          //   from: data1,
-          //   to: data2,
-          // });
+          graphs.graph.edges.push({
+            id: uuid(),
+            from: data1,
+            to: data2,
+          });
 
-          // console.log(graphs.graph);
+          var nodeLabel = graphs.graph.nodes.find((node) => node.id === data1);
+
+          tableStates.tables.state.push({
+            id: data2,
+            parent: data1,
+            label: nodeLabel,
+          });
         },
       },
     },
@@ -78,7 +95,6 @@ export default function Nodes() {
   });
 
   function addNode() {
-    console.log(color);
     graphs.graph.nodes.push({
       id: nodeId,
       label: name,
@@ -96,6 +112,16 @@ export default function Nodes() {
   function removeNode(selected) {
     const findId = graphs.graph.nodes.findIndex((node) => node.id === selected);
     graphs.graph.nodes.splice(findId, 1);
+
+    const findEdgesConnected = graphs.graph.edges.filter(
+      (edge) => edge.from === selected || edge.to === selected,
+    );
+    var i = 0;
+    if (findEdgesConnected.length > 1) {
+      graphs.graph.edges.splice(findEdgesConnected[i], 1);
+      i++;
+    }
+    graphs.graph.edges.splice(findEdgesConnected[0], 1);
   }
 
   function changeColor() {
@@ -105,6 +131,11 @@ export default function Nodes() {
   function handleColorChange(hex) {
     setColor(hex.hex);
     setPickerVisible(false);
+  }
+
+  function handleTable(event) {
+    console.log(event.nodes[0]);
+    setTableVisible(true);
   }
 
   return (
@@ -159,17 +190,13 @@ export default function Nodes() {
       {visible === true ? (
         <>
           <Canvas className="canvas">
-            <label>ID:</label>
-            <input
-              type="number"
-              name={nodeId}
-              onChange={(value) => setNodeId(value.target.value)}
-            />
             <label>Name:</label>
             <input
               type="text"
               name={name}
-              onChange={(value) => setName(value.target.value)}
+              onChange={(value) =>
+                setName(value.target.value) + setNodeId(uuid())
+              }
             />
             <label>Description:</label>
             <input
@@ -197,12 +224,37 @@ export default function Nodes() {
           </Canvas>
         </>
       ) : null}
+      {tableVisible === true ? (
+        <>
+          <Table>
+            <table>
+              <thead>
+                <tr>
+                  <th>STATE 1</th>
+                  <th>Probability</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="strong">Yes</td>
+                  <td>0.5</td>
+                </tr>
+                <tr>
+                  <td className="strong">No</td>
+                  <td>0.5</td>
+                </tr>
+              </tbody>
+            </table>
+          </Table>
+        </>
+      ) : null}
       <div>
-        {/*  (event) => setSelected2(event.nodes[1]) */}
         <Network
           style={{ height: '800px', flex: 1 }}
           onClick={(event) =>
-            setSelected(event.nodes[0]) + setSelected2(event.nodes[1])
+            setSelected(event.nodes[0]) +
+            setSelected2(event.nodes[1]) +
+            handleTable(event)
           }
           options={graphs.options}
         >
@@ -213,15 +265,6 @@ export default function Nodes() {
             <Edge key={e.id} id={e.id} from={e.from} to={e.to} />
           ))}
         </Network>
-        {/* {graphs.graph.nodes ? (
-          <Graph
-            style={{ height: '800px', flex: 1 }}
-            graph={graphs.graph}
-            options={graphs.options}
-            events={events}
-            getNetwork={(network) => network.renderer.renderingActive === true}
-          />
-        ) : null} */}
       </div>
     </Container>
   );

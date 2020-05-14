@@ -132,3 +132,34 @@ export const Line = styled.div`
   width: 100%;
   margin-top: 10px;
 `;
+
+export const Table = styled.div`
+  padding-left: 160px;
+  padding-top: 30px;
+
+  table,
+  th,
+  td {
+    border: 1px solid black;
+  }
+
+  table {
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #000;
+    max-width: 200px;
+
+    th {
+      align-items: center;
+    }
+
+    tbody {
+      flex-direction: column;
+      align-items: center;
+
+      .strong {
+        font-weight: bold;
+      }
+    }
+  }
+`;
