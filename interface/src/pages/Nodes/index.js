@@ -24,8 +24,13 @@ export default function Nodes() {
   const [selected2, setSelected2] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-
   const [color, setColor] = useState('#7159c1');
+
+  const [state, setState] = useState({
+    state: {
+      states: [],
+    },
+  });
 
   var graph = {
     nodes: [],
@@ -46,7 +51,7 @@ export default function Nodes() {
     options: {
       layout: {},
       edges: {
-        color: '#000000',
+        color: '#0000',
         arrows: {
           to: { enabled: true, scaleFactor: 1, type: 'arrow' },
         },
@@ -57,6 +62,7 @@ export default function Nodes() {
         heightConstraint: {
           minimum: 30,
         },
+        font: '14px arial #fff',
       },
       interaction: {
         tooltipDelay: 150,
@@ -134,7 +140,18 @@ export default function Nodes() {
   }
 
   function handleTable(event) {
-    console.log(event.nodes[0]);
+    var findStates = tableStates.tables.state.filter(
+      (state) => state.id === event.nodes[0],
+    );
+
+    for (var i = 0; findStates.length > i; i++) {
+      console.log(findStates[i].label.label, 'label');
+      state.state.states.push({
+        id: uuid(),
+        label: findStates[i].label.label,
+      });
+    }
+
     setTableVisible(true);
   }
 
@@ -227,24 +244,65 @@ export default function Nodes() {
       {tableVisible === true ? (
         <>
           <Table>
-            <table>
-              <thead>
-                <tr>
-                  <th>STATE 1</th>
-                  <th>Probability</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="strong">Yes</td>
-                  <td>0.5</td>
-                </tr>
-                <tr>
-                  <td className="strong">No</td>
-                  <td>0.5</td>
-                </tr>
-              </tbody>
-            </table>
+            {state.state.states.length > 0 ? (
+              state.state.states.map((s) => (
+                <table key={s.id}>
+                  <thead>
+                    <tr>
+                      <th>{s.label}</th>
+                    </tr>
+                  </thead>
+                </table>
+              ))
+            ) : (
+              <table>
+                <thead>
+                  <tr>
+                    <th>STATE 1</th>
+                    <th>Probability</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>Yes</strong>
+                    </td>
+                    <td>0.5</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>No</strong>
+                    </td>
+                    <td>0.5</td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
+            {/* {state.state.states.map((states) => (
+              <table key={states.id}>
+                <thead>
+                  <tr>
+                    <th>{states.label}</th>
+                    <td>
+                      <strong>Yes</strong>
+                    </td>
+                    <td>
+                      <strong>No</strong>
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="strong">Yes</td>
+                    <td>0.5</td>
+                  </tr>
+                  <tr>
+                    <td className="strong">No</td>
+                    <td>0.5</td>
+                  </tr>
+                </tbody>
+              </table>
+            ))} */}
           </Table>
         </>
       ) : null}
@@ -252,10 +310,9 @@ export default function Nodes() {
         <Network
           style={{ height: '800px', flex: 1 }}
           onClick={(event) =>
-            setSelected(event.nodes[0]) +
-            setSelected2(event.nodes[1]) +
-            handleTable(event)
+            setSelected(event.nodes[0]) + setSelected2(event.nodes[1])
           }
+          onDoubleClick={(event) => handleTable(event)}
           options={graphs.options}
         >
           {graphs.graph.nodes.map((g) => (
