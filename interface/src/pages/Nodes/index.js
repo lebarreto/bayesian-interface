@@ -26,11 +26,7 @@ export default function Nodes() {
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('#7159c1');
 
-  const [state, setState] = useState({
-    state: {
-      states: [],
-    },
-  });
+  const [state, setState] = useState([]);
 
   var graph = {
     nodes: [],
@@ -145,16 +141,25 @@ export default function Nodes() {
     );
 
     for (var i = 0; findStates.length > i; i++) {
-      console.log(findStates[i].label.label, 'label');
-      state.state.states.push({
+      state.push({
         id: uuid(),
         label: findStates[i].label.label,
       });
     }
 
     setTableVisible(true);
+
+    console.log(state);
+    setTimeout(() => {
+      while (state.length > 0) {
+        state.pop();
+      }
+
+      setTableVisible(false);
+    }, 5000);
   }
 
+  var i = 0;
   return (
     <Container>
       <HeaderMenu>
@@ -244,16 +249,16 @@ export default function Nodes() {
       {tableVisible === true ? (
         <>
           <Table>
-            {state.state.states.length > 0 ? (
-              state.state.states.map((s) => (
-                <table key={s.id}>
-                  <thead>
-                    <tr>
-                      <th>{s.label}</th>
-                    </tr>
-                  </thead>
-                </table>
-              ))
+            {state.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>{state[0].label}</th>
+                    <th style={{ width: '80px' }}>Yes</th>
+                    <th style={{ width: '80px' }}>No</th>
+                  </tr>
+                </thead>
+              </table>
             ) : (
               <table>
                 <thead>
@@ -278,31 +283,6 @@ export default function Nodes() {
                 </tbody>
               </table>
             )}
-            {/* {state.state.states.map((states) => (
-              <table key={states.id}>
-                <thead>
-                  <tr>
-                    <th>{states.label}</th>
-                    <td>
-                      <strong>Yes</strong>
-                    </td>
-                    <td>
-                      <strong>No</strong>
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="strong">Yes</td>
-                    <td>0.5</td>
-                  </tr>
-                  <tr>
-                    <td className="strong">No</td>
-                    <td>0.5</td>
-                  </tr>
-                </tbody>
-              </table>
-            ))} */}
           </Table>
         </>
       ) : null}
