@@ -27,6 +27,7 @@ export default function Nodes() {
   const [color, setColor] = useState('#7159c1');
 
   const [state, setState] = useState([]);
+  const [list, setList] = useState([]);
 
   var graph = {
     nodes: [],
@@ -71,6 +72,8 @@ export default function Nodes() {
       manipulation: {
         deleteNode: (nodeData, callback) => {
           removeNode(nodeData);
+          list.splice(0, list.length);
+          state.splice(0, state.length);
         },
         addEdge: function (data1, data2) {
           console.log('add edge', data1, data2);
@@ -119,10 +122,17 @@ export default function Nodes() {
       (edge) => edge.from === selected || edge.to === selected,
     );
     var i = 0;
+
+    console.log(findEdgesConnected, 'edge', graphs, 'graphs');
     if (findEdgesConnected.length > 1) {
       graphs.graph.edges.splice(findEdgesConnected[i], 1);
+      list.splice(0, list.length);
+      state.splice(0, state.length);
       i++;
     }
+
+    list.splice(0, list.length);
+    state.splice(0, state.length);
     graphs.graph.edges.splice(findEdgesConnected[0], 1);
   }
 
@@ -146,20 +156,20 @@ export default function Nodes() {
         label: findStates[i].label.label,
       });
     }
+    console.log(state, 'state');
 
     setTableVisible(true);
 
-    console.log(state);
     setTimeout(() => {
       while (state.length > 0) {
         state.pop();
+        list.splice(0, list.length);
       }
 
       setTableVisible(false);
     }, 5000);
   }
 
-  var i = 0;
   return (
     <Container>
       <HeaderMenu>
@@ -258,6 +268,29 @@ export default function Nodes() {
                     <th style={{ width: '80px' }}>No</th>
                   </tr>
                 </thead>
+                <tbody>
+                  {state.length > 1
+                    ? (list.push(state.splice(1, 1)),
+                      console.log(list, 'lista'),
+                      list.map((states) => (
+                        <tr key={states.id}>
+                          <th>{states[0].label}</th>
+                          <th>Yes</th>
+                          <th>No</th>
+                          <th>Yes</th>
+                          <th>No</th>
+                        </tr>
+                      )))
+                    : null}
+                  <tr>
+                    <th>Yes</th>
+                    <td>0.9</td>
+                  </tr>
+                  <tr>
+                    <th>No</th>
+                    <td>0.9</td>
+                  </tr>
+                </tbody>
               </table>
             ) : (
               <table>
