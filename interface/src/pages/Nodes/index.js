@@ -76,7 +76,6 @@ export default function Nodes() {
           state.splice(0, state.length);
         },
         addEdge: function (data1, data2) {
-          console.log('add edge', data1, data2);
           graphs.graph.edges.push({
             id: uuid(),
             from: data1,
@@ -121,19 +120,45 @@ export default function Nodes() {
     const findEdgesConnected = graphs.graph.edges.filter(
       (edge) => edge.from === selected || edge.to === selected,
     );
-    var i = 0;
 
-    console.log(findEdgesConnected, 'edge', graphs, 'graphs');
-    if (findEdgesConnected.length > 1) {
-      graphs.graph.edges.splice(findEdgesConnected[i], 1);
+    const states = tableStates.tables.state.filter(
+      (state) => state.parent === selected,
+    );
+
+    var i = 0;
+    var findEdgeFromId;
+    var findStates;
+
+    while (findEdgesConnected.length > 1 && i < findEdgesConnected.length) {
+      findEdgeFromId = graphs.graph.edges.findIndex(
+        (edges) => edges.from === findEdgesConnected[i].from,
+      );
+
+      findStates = tableStates.tables.state.findIndex(
+        (state) => state.parent === findEdgesConnected[i].from,
+      );
+
+      graphs.graph.edges.splice(findEdgeFromId, 0);
+      tableStates.tables.state.splice(findStates, 0);
+
       list.splice(0, list.length);
       state.splice(0, state.length);
+
       i++;
     }
 
     list.splice(0, list.length);
-    state.splice(0, state.length);
-    graphs.graph.edges.splice(findEdgesConnected[0], 1);
+
+    findEdgeFromId = graphs.graph.edges.findIndex(
+      (edges) => edges.from === findEdgesConnected[0].from,
+    );
+
+    findStates = tableStates.tables.state.findIndex(
+      (state) => state.parent === findEdgesConnected[0].from,
+    );
+
+    graphs.graph.edges.splice(findEdgeFromId, 1);
+    tableStates.tables.state.splice(findStates, 1);
   }
 
   function changeColor() {
@@ -156,7 +181,8 @@ export default function Nodes() {
         label: findStates[i].label.label,
       });
     }
-    console.log(state, 'state');
+
+    console.log(state.length, 'length');
 
     setTableVisible(true);
 
@@ -271,9 +297,8 @@ export default function Nodes() {
                 <tbody>
                   {state.length > 1
                     ? (list.push(state.splice(1, 1)),
-                      console.log(list, 'lista'),
                       list.map((states) => (
-                        <tr key={states.id}>
+                        <tr key={states[0].id}>
                           <th>{states[0].label}</th>
                           <th>Yes</th>
                           <th>No</th>
