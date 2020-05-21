@@ -147,18 +147,21 @@ export const Table = styled.div`
     flex-direction: row;
     align-items: center;
     border: 1px solid #000;
-    max-width: 200px;
 
-    th {
-      align-items: center;
+    thead {
+      tr {
+        th {
+          width: 120px;
+        }
+      }
     }
 
     tbody {
-      flex-direction: column;
-      align-items: center;
-
-      .strong {
-        font-weight: bold;
+      tr {
+        th {
+          font-weight: bold;
+          width: 40px;
+        }
       }
     }
   }

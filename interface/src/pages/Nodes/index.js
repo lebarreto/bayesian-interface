@@ -26,8 +26,10 @@ export default function Nodes() {
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('#7159c1');
 
-  const [state, setState] = useState([]);
-  const [list, setList] = useState([]);
+  const [state] = useState([]);
+  const [firstState] = useState([]);
+  const [othersState] = useState([]);
+  const [list] = useState([]);
 
   var graph = {
     nodes: [],
@@ -38,13 +40,13 @@ export default function Nodes() {
     states: [],
   };
 
-  const [tableStates, setTableStates] = useState({
+  const [tableStates] = useState({
     tables: {
       state: table.states,
     },
   });
 
-  const [graphs, setGraphs] = useState({
+  const [graphs] = useState({
     options: {
       layout: {},
       edges: {
@@ -121,10 +123,6 @@ export default function Nodes() {
       (edge) => edge.from === selected || edge.to === selected,
     );
 
-    const states = tableStates.tables.state.filter(
-      (state) => state.parent === selected,
-    );
-
     var i = 0;
     var findEdgeFromId;
     var findStates;
@@ -140,6 +138,8 @@ export default function Nodes() {
 
       graphs.graph.edges.splice(findEdgeFromId, 0);
       tableStates.tables.state.splice(findStates, 0);
+      firstState.splice(findStates, 0);
+      othersState.splice(findStates, 0);
 
       list.splice(0, list.length);
       state.splice(0, state.length);
@@ -159,6 +159,8 @@ export default function Nodes() {
 
     graphs.graph.edges.splice(findEdgeFromId, 1);
     tableStates.tables.state.splice(findStates, 1);
+    firstState.splice(findStates, 0);
+    othersState.splice(findStates, 0);
   }
 
   function changeColor() {
@@ -182,7 +184,11 @@ export default function Nodes() {
       });
     }
 
-    console.log(state.length, 'length');
+    firstState.push(state[0]);
+
+    for (var i = 1; state.length > i; i++) {
+      othersState.push(state[i]);
+    }
 
     setTableVisible(true);
 
@@ -190,10 +196,14 @@ export default function Nodes() {
       while (state.length > 0) {
         state.pop();
         list.splice(0, list.length);
+        firstState.splice(0, firstState.length);
+        othersState.splice(0, othersState.length);
       }
 
       setTableVisible(false);
     }, 5000);
+
+    console.log(firstState, 'first', othersState, 'others');
   }
 
   return (
@@ -288,34 +298,56 @@ export default function Nodes() {
             {state.length > 0 ? (
               <table>
                 <thead>
-                  <tr>
-                    <th>{state[0].label}</th>
-                    <th style={{ width: '80px' }}>Yes</th>
-                    <th style={{ width: '80px' }}>No</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state.length > 1
-                    ? (list.push(state.splice(1, 1)),
-                      list.map((states) => (
-                        <tr key={states[0].id}>
-                          <th>{states[0].label}</th>
-                          <th>Yes</th>
-                          <th>No</th>
-                          <th>Yes</th>
-                          <th>No</th>
+                  {firstState.map((first) => (
+                    <tr key={first.id}>
+                      <th>{first.label}</th>
+                      <th>Yes</th>
+                      <th>No</th>
+                    </tr>
+                  ))}
+                  {othersState.length > 0
+                    ? othersState.map((states) => (
+                        <tr key={states.id}>
+                          <th>{states.label}</th>
+                          <th style={{ width: '40px' }}>Yes</th>
+                          <th style={{ width: '40px' }}>No</th>
+                          <th style={{ width: '40px' }}>Yes</th>
+                          <th style={{ width: '40px' }}>No</th>
                         </tr>
-                      )))
+                      ))
                     : null}
-                  <tr>
-                    <th>Yes</th>
-                    <td>0.9</td>
-                  </tr>
-                  <tr>
-                    <th>No</th>
-                    <td>0.9</td>
-                  </tr>
-                </tbody>
+                </thead>
+                {othersState.length > 0 ? (
+                  <tbody>
+                    <tr>
+                      <th>Yes</th>
+                      <td>0.4</td>
+                      <td>0.1</td>
+                      <td>0.4</td>
+                      <td>0.1</td>
+                    </tr>
+                    <tr>
+                      <th>No</th>
+                      <td>0.4</td>
+                      <td>0.1</td>
+                      <td>0.4</td>
+                      <td>0.1</td>
+                    </tr>
+                  </tbody>
+                ) : (
+                  <tbody>
+                    <tr>
+                      <th>Yes</th>
+                      <td>0.9</td>
+                      <td>0.1</td>
+                    </tr>
+                    <tr>
+                      <th>No</th>
+                      <td>0.9</td>
+                      <td>0.1</td>
+                    </tr>
+                  </tbody>
+                )}
               </table>
             ) : (
               <table>
