@@ -29,6 +29,18 @@ export const HeaderMenu = styled.div`
       align-items: center;
       padding-right: 80px;
 
+      button {
+        color: #fff;
+        font-size: 20px;
+        align-items: center;
+        text-decoration: none;
+        margin-left: 30px;
+        text-decoration: none;
+        background: none;
+        border: 0;
+        margin-right: 30px;
+      }
+
       a {
         color: #fff;
         font-size: 20px;

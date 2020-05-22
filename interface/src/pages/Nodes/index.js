@@ -202,8 +202,24 @@ export default function Nodes() {
 
       setTableVisible(false);
     }, 5000);
+  }
 
-    console.log(firstState, 'first', othersState, 'others');
+  function saveAsImage() {
+    //console.log('clicou', document.getElementsByTagName('canvas'));
+
+    var canvas = document.getElementsByTagName('canvas')[0];
+    var image = canvas
+      .toDataURL('image/png')
+      .replace('image/png', 'image/octet-stream');
+
+    downloadURL(image);
+  }
+
+  function downloadURL(img) {
+    var a = document.createElement('a');
+    a.href = img.replace('image/png', 'image/octet-stream');
+    a.download = 'graph.png';
+    a.click();
   }
 
   return (
@@ -220,10 +236,10 @@ export default function Nodes() {
               <FiSettings size={16} color="#fff" />
               Settings
             </a>
-            <a href="/" alt="Run">
+            <button onClick={saveAsImage}>
               <FiImage size={16} color="#fff" />
               Save as image
-            </a>
+            </button>
             <a href="/" alt="Run">
               <FiArchive size={16} color="#fff" />
               Save as blabla
@@ -378,6 +394,8 @@ export default function Nodes() {
       ) : null}
       <div>
         <Network
+          id="canvas"
+          key="canvas"
           style={{ height: '800px', flex: 1 }}
           onClick={(event) =>
             setSelected(event.nodes[0]) + setSelected2(event.nodes[1])
