@@ -205,8 +205,6 @@ export default function Nodes() {
   }
 
   function saveAsImage() {
-    //console.log('clicou', document.getElementsByTagName('canvas'));
-
     var canvas = document.getElementsByTagName('canvas')[0];
     var image = canvas
       .toDataURL('image/png')
@@ -222,16 +220,20 @@ export default function Nodes() {
     a.click();
   }
 
+  function runModel() {
+    console.log(tableStates, 'run');
+  }
+
   return (
     <Container>
       <HeaderMenu>
         <header>
           <h6>Bayesian Network</h6>
           <div>
-            <a href="/" alt="Run">
+            <button onClick={runModel}>
               <FiPlay size={16} color="#fff" />
               Run
-            </a>
+            </button>
             <a href="/" alt="Run">
               <FiSettings size={16} color="#fff" />
               Settings
