@@ -160,20 +160,15 @@ export const Table = styled.div`
     align-items: center;
     border: 1px solid #000;
 
-    thead {
-      tr {
-        th {
-          width: 120px;
-        }
-      }
-    }
-
+    thead,
     tbody {
-      tr {
-        th {
-          font-weight: bold;
-          width: 40px;
-        }
+      th {
+        font-weight: bold;
+        align-items: center;
+      }
+
+      td {
+        align-items: center;
       }
     }
   }

@@ -13,11 +13,14 @@ import { uuid } from 'uuidv4';
 import { Container, HeaderMenu, SideNav, Canvas, Table } from './styles';
 import circle from '../../assets/circle.png';
 import seta from '../../assets/seta.png';
+import AnalysisMode from '../../components/AnalysisMode';
 
 export default function Nodes() {
   const [visible, setVisible] = useState(false);
   const [tableVisible, setTableVisible] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [analysisVisible, setAnalysisVisible] = useState(false);
+  const [nodeVisible, setNodeVisible] = useState(true);
 
   const [nodeId, setNodeId] = useState('');
   const [selected, setSelected] = useState('');
@@ -57,7 +60,6 @@ export default function Nodes() {
       },
       nodes: {
         chosen: true,
-        heightConstraint: true,
         heightConstraint: {
           minimum: 30,
         },
@@ -221,7 +223,8 @@ export default function Nodes() {
   }
 
   function runModel() {
-    console.log(tableStates, 'run');
+    setNodeVisible(false);
+    setAnalysisVisible(true);
   }
 
   return (
@@ -318,19 +321,23 @@ export default function Nodes() {
                 <thead>
                   {firstState.map((first) => (
                     <tr key={first.id}>
-                      <th>{first.label}</th>
-                      <th>Yes</th>
-                      <th>No</th>
+                      <th style={{ width: '120px' }}>{first.label}</th>
+                      <td colSpan="2" style={{ fontWeight: 'bold' }}>
+                        Yes
+                      </td>
+                      <td colSpan="2" style={{ fontWeight: 'bold' }}>
+                        No
+                      </td>
                     </tr>
                   ))}
                   {othersState.length > 0
                     ? othersState.map((states) => (
                         <tr key={states.id}>
                           <th>{states.label}</th>
-                          <th style={{ width: '40px' }}>Yes</th>
-                          <th style={{ width: '40px' }}>No</th>
-                          <th style={{ width: '40px' }}>Yes</th>
-                          <th style={{ width: '40px' }}>No</th>
+                          <td style={{ fontWeight: 'bold' }}>Yes</td>
+                          <td style={{ fontWeight: 'bold' }}>No</td>
+                          <td style={{ fontWeight: 'bold' }}>Yes</td>
+                          <td style={{ fontWeight: 'bold' }}>No</td>
                         </tr>
                       ))
                     : null}
@@ -355,14 +362,14 @@ export default function Nodes() {
                 ) : (
                   <tbody>
                     <tr>
-                      <th>Yes</th>
-                      <td>0.9</td>
-                      <td>0.1</td>
+                      <th style={{ width: '120px' }}>Yes</th>
+                      <td colSpan="2">0.9</td>
+                      <td colSpan="2">0.1</td>
                     </tr>
                     <tr>
-                      <th>No</th>
-                      <td>0.9</td>
-                      <td>0.1</td>
+                      <th style={{ width: '120px' }}>No</th>
+                      <td colSpan="2">0.9</td>
+                      <td colSpan="2">0.1</td>
                     </tr>
                   </tbody>
                 )}
@@ -395,24 +402,27 @@ export default function Nodes() {
         </>
       ) : null}
       <div>
-        <Network
-          id="canvas"
-          key="canvas"
-          style={{ height: '800px', flex: 1 }}
-          onClick={(event) =>
-            setSelected(event.nodes[0]) + setSelected2(event.nodes[1])
-          }
-          onDoubleClick={(event) => handleTable(event)}
-          options={graphs.options}
-        >
-          {graphs.graph.nodes.map((g) => (
-            <Node key={g.id} id={g.id} label={g.label} color={g.color} />
-          ))}
-          {graphs.graph.edges.map((e) => (
-            <Edge key={e.id} id={e.id} from={e.from} to={e.to} />
-          ))}
-        </Network>
+        {nodeVisible === true ? (
+          <Network
+            id="canvas"
+            key="canvas"
+            style={{ height: '800px', flex: 1 }}
+            onClick={(event) =>
+              setSelected(event.nodes[0]) + setSelected2(event.nodes[1])
+            }
+            onDoubleClick={(event) => handleTable(event)}
+            options={graphs.options}
+          >
+            {graphs.graph.nodes.map((g) => (
+              <Node key={g.id} id={g.id} label={g.label} color={g.color} />
+            ))}
+            {graphs.graph.edges.map((e) => (
+              <Edge key={e.id} id={e.id} from={e.from} to={e.to} />
+            ))}
+          </Network>
+        ) : null}
       </div>
+      {analysisVisible === true ? <AnalysisMode data={tableStates} /> : null}
     </Container>
   );
 }
