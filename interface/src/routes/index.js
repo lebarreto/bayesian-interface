@@ -6,7 +6,7 @@ import Nodes from '../pages/Nodes';
 function Routes() {
   return (
     <Switch>
-      <Route path="/" component={Nodes} />
+      <Route path="/" exact component={Nodes} />
     </Switch>
   );
 }

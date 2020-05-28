@@ -33,6 +33,7 @@ export default function Nodes() {
   const [firstState] = useState([]);
   const [othersState] = useState([]);
   const [list] = useState([]);
+  const [analysisTable, setAnalysisTable] = useState([]);
 
   var graph = {
     nodes: [],
@@ -224,6 +225,7 @@ export default function Nodes() {
 
   function runModel() {
     setNodeVisible(false);
+    setAnalysisTable(tableStates);
     setAnalysisVisible(true);
   }
 
@@ -422,7 +424,7 @@ export default function Nodes() {
           </Network>
         ) : null}
       </div>
-      {analysisVisible === true ? <AnalysisMode data={tableStates} /> : null}
+      {analysisVisible && <AnalysisMode data={analysisTable} />}
     </Container>
   );
 }

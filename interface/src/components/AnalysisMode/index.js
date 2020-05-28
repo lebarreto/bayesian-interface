@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Network, Node, Edge } from 'react-vis-network';
+import React, { useState, useEffect } from 'react';
 
 import { Container } from './styles';
 
@@ -31,16 +30,22 @@ function AnalysisMode({ data }) {
     },
   });
 
-  console.log(data, 'chegou');
+  const [analysisData] = useState([]);
+
+  useEffect(() => {
+    analysisData.push(data);
+  }, []);
 
   return (
     <Container>
       <div>
-        <Network style={{ height: '800px', flex: 1 }} options={graphs.options}>
-          {data.tables.state.map((node) => (
-            <Node key={node.id} label={node.label.label} />
-          ))}
-        </Network>
+        {analysisData.map((node) =>
+          node.tables.state.map((item) => (
+            <div>
+              <p>{item.label.label}</p>
+            </div>
+          )),
+        )}
       </div>
     </Container>
   );
