@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Container } from './styles';
 
-function AnalysisMode({ data }) {
+function AnalysisMode({ data, states }) {
   const [graphs] = useState({
     options: {
       layout: {},
@@ -34,15 +34,17 @@ function AnalysisMode({ data }) {
 
   useEffect(() => {
     analysisData.push(data);
+    console.log(data, 'data');
+    console.log(states, 'states');
   }, []);
 
   return (
     <Container>
       <div>
         {analysisData.map((node) =>
-          node.tables.state.map((item) => (
-            <div>
-              <p>{item.label.label}</p>
+          node.nodes.map((item) => (
+            <div key={item.id}>
+              <p>{item.label}</p>
             </div>
           )),
         )}

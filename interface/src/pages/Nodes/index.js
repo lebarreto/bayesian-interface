@@ -225,7 +225,7 @@ export default function Nodes() {
 
   function runModel() {
     setNodeVisible(false);
-    setAnalysisTable(tableStates);
+    setAnalysisTable(graphs.graph);
     setAnalysisVisible(true);
   }
 
@@ -422,9 +422,10 @@ export default function Nodes() {
               <Edge key={e.id} id={e.id} from={e.from} to={e.to} />
             ))}
           </Network>
+        ) : analysisVisible === true ? (
+          <AnalysisMode data={analysisTable} states={tableStates} />
         ) : null}
       </div>
-      {analysisVisible && <AnalysisMode data={analysisTable} />}
     </Container>
   );
 }
