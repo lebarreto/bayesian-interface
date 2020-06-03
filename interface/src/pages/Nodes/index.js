@@ -9,11 +9,11 @@ import {
 } from 'react-icons/fi';
 import { Network, Node, Edge } from 'react-vis-network';
 import { uuid } from 'uuidv4';
+import history from '../../services/history';
 
 import { Container, HeaderMenu, SideNav, Canvas, Table } from './styles';
 import circle from '../../assets/circle.png';
 import seta from '../../assets/seta.png';
-import AnalysisMode from '../../components/AnalysisMode';
 
 export default function Nodes() {
   const [visible, setVisible] = useState(false);
@@ -235,7 +235,14 @@ export default function Nodes() {
         <header>
           <h6>Bayesian Network</h6>
           <div>
-            <button onClick={runModel}>
+            <button
+              onClick={() =>
+                history.push('/analysis', {
+                  data: graphs.graph,
+                  states: tableStates,
+                })
+              }
+            >
               <FiPlay size={16} color="#fff" />
               Run
             </button>
@@ -422,9 +429,9 @@ export default function Nodes() {
               <Edge key={e.id} id={e.id} from={e.from} to={e.to} />
             ))}
           </Network>
-        ) : analysisVisible === true ? (
-          <AnalysisMode data={analysisTable} states={tableStates} />
-        ) : null}
+        ) : // ) : analysisVisible === true ? (
+        //   <AnalysisMode data={analysisTable} states={tableStates} />
+        null}
       </div>
     </Container>
   );
